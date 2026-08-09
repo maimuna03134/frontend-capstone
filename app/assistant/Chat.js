@@ -69,7 +69,7 @@ function useDelayedFalse(value, delayMs) {
 }
 
 export default function Chat() {
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, sendMessage, status, stop, error, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
   const [input, setInput] = useState("");
@@ -155,6 +155,24 @@ export default function Chat() {
         ))}
 
         {showIndicator && <ThinkingIndicator exiting={!waitingOnAssistant} />}
+
+        {status === "error" && (
+          <div className="flex animate-chat-message-in justify-start">
+            <div className="max-w-[85%] rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+              <p>
+                Something went wrong
+                {error?.message ? `: ${error.message}` : "."}
+              </p>
+              <button
+                type="button"
+                onClick={() => regenerate()}
+                className="mt-1 font-medium underline underline-offset-2"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
 
         <div ref={bottomRef} />
       </div>

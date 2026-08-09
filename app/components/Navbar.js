@@ -10,6 +10,8 @@ const links = [
   { href: "/cart", label: "Cart" },
   { href: "/account", label: "Account" },
   { href: "/login", label: "Log in" },
+  { href: "/assistant", label: "Assistant" },
+  
 ];
 
 export default function Navbar() {

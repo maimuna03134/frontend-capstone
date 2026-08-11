@@ -16,11 +16,12 @@ export async function POST(req) {
     // useChat sends its whole UIMessage history on every request (that's
     // what makes multi-turn conversation work) — convert it to the plain
     // model-message shape streamText expects.
-    messages: convertToModelMessages(messages),
+    messages: await convertToModelMessages(messages),
   });
 
-  // AI_GATEWAY_API_KEY is read by the SDK straight from process.env — it's
-  // never sent to, or readable by, the client. That's the whole reason this
-  // call happens in a route handler instead of the Chat component.
+  // GOOGLE_GENERATIVE_AI_API_KEY is read by the SDK straight from
+  // process.env — it's never sent to, or readable by, the client. That's
+  // the whole reason this call happens in a route handler instead of in
+  // the Chat component.
   return result.toUIMessageStreamResponse();
 }

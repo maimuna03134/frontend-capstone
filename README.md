@@ -6,7 +6,7 @@ Next.js App Router and deployed from day one.
 
 ## Live preview
 
-(add the Vercel preview URL here once deployed)
+https://frontend-capstone-wine.vercel.app/
 
 ## AI tools
 

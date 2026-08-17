@@ -76,8 +76,6 @@ export default function Chat() {
     transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
   const [input, setInput] = useState("");
-
-  const [input, setInput] = useState("");
   const [isRetrying, setIsRetrying] = useState(false);
   const [prevStatus, setPrevStatus] = useState(status);
 
@@ -182,16 +180,14 @@ export default function Chat() {
         {status === "error" && (
           <div className="flex animate-chat-message-in justify-start">
             <div className="max-w-[85%] rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
-              <p>
-                Something went wrong
-                {error?.message ? `: ${error.message}` : "."}
-              </p>
+              <p>{getErrorCopy(error)}</p>
               <button
                 type="button"
-                onClick={() => regenerate()}
-                className="mt-1 font-medium underline underline-offset-2"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="mt-1 font-medium underline underline-offset-2 disabled:no-underline disabled:opacity-60"
               >
-                Try again
+                {isRetrying ? "Retrying…" : "Retry last message"}
               </button>
             </div>
           </div>

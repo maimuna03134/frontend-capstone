@@ -10,6 +10,13 @@ function categorizeError(error) {
   const message = error instanceof Error ? error.message : String(error ?? "");
   const lower = message.toLowerCase();
 
+  // Errors thrown deliberately inside our own tools (see lib/tools.js) are
+  // already safe, user-facing copy — pass them through as-is instead of
+  // masking them behind a generic category.
+  if (lower.includes("in stock per order")) {
+    return message;
+  }
+
   if (lower.includes("429") || lower.includes("rate limit") || lower.includes("quota")) {
     return "rate-limit";
   }

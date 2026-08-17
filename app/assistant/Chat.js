@@ -4,10 +4,6 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-/** Joins a message's text parts into one string. Assistant messages arrive
- *  as a `parts` array (text, plus other part types this app doesn't use
- *  yet) rather than a flat string — this is what "typed message parts"
- *  means in the brief. */
 function getMessageText(message) {
   return message.parts
     .filter((part) => part.type === "text")
@@ -25,15 +21,6 @@ function subscribeToReducedMotion(callback) {
   return () => reducedMotionQuery?.removeEventListener("change", callback);
 }
 
-/** True while the OS-level "reduce motion" preference is on. The CSS in
- *  globals.css already zeroes out animation/transition *durations*
- *  automatically for every element — this hook exists only for the one bit
- *  of motion logic that lives outside CSS: how long the thinking indicator
- *  stays mounted so its exit animation can finish. Without checking this,
- *  a reduced-motion user would still wait out the full unmount delay for
- *  an animation that isn't actually playing. useSyncExternalStore (rather
- *  than useEffect + setState) is the React-recommended way to subscribe to
- *  an external browser API like matchMedia. */
 function usePrefersReducedMotion() {
   return useSyncExternalStore(
     subscribeToReducedMotion,
@@ -42,18 +29,10 @@ function usePrefersReducedMotion() {
   );
 }
 
-/** Mirrors `value`, except when it flips to false it keeps returning true
- *  for `delayMs` longer — just enough time for an exit animation keyed off
- *  the same flip to finish before the element actually unmounts. */
 function useDelayedFalse(value, delayMs) {
   const [delayed, setDelayed] = useState(value);
   const [prevValue, setPrevValue] = useState(value);
 
-  // Adjust state during render when the input flips true — the
-  // React-documented alternative to an effect for syncing derived state
-  // from a prop (react.dev/learn/you-might-not-need-an-effect). Only the
-  // delayed-*false* transition genuinely needs a timer, so that's the only
-  // part below that needs an effect.
   if (value !== prevValue) {
     setPrevValue(value);
     if (value) setDelayed(true);
@@ -81,11 +60,6 @@ export default function Chat() {
 
   const isBusy = status === "submitted" || status === "streaming";
 
-  // The assistant's message exists in `messages` as soon as the stream
-  // opens, but its text stays empty for a beat before the first token
-  // lands. Treat "streaming but still empty" the same as "submitted" so
-  // the thinking indicator and the first token are one continuous handoff
-  // instead of the indicator disappearing a frame before text appears.
   const lastMessage = messages[messages.length - 1];
   const waitingOnAssistant =
     status === "submitted" ||
@@ -93,19 +67,12 @@ export default function Chat() {
       lastMessage?.role === "assistant" &&
       getMessageText(lastMessage).length === 0);
 
-  // Keep the indicator mounted 150ms past the moment it should logically
-  // disappear so its exit animation (see chat-indicator-out in globals.css)
-  // has time to play instead of the element just vanishing. Skip the delay
-  // entirely for reduced-motion users — there's no animation to wait for.
   const prefersReducedMotion = usePrefersReducedMotion();
   const showIndicator = useDelayedFalse(
     waitingOnAssistant,
     prefersReducedMotion ? 0 : 150,
   );
 
-  // --- Auto-scroll: stay pinned to the bottom only while the reader is
-  // already there. The moment they scroll up mid-stream, release the pin
-  // and surface a "jump to latest" button instead of yanking them back down.
   function handleScroll() {
     const el = scrollRef.current;
     if (!el) return;
@@ -236,27 +203,27 @@ export default function Chat() {
 function MessageBubble({ message }) {
   const isUser = message.role === "user";
   const text = getMessageText(message);
+  const toolParts = message.parts.filter(
+    (part) => part.type === "tool-calculateCartSummary",
+  );
 
-  // Nothing to show yet (assistant message exists but hasn't streamed any
-  // text) — the ThinkingIndicator above the message list covers this gap,
-  // so render nothing here rather than an empty bubble.
-  if (!text) return null;
+  if (!text && toolParts.length === 0) return null;
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      {/* Plain text, not markdown: rendering half-finished markdown mid-stream
-          (an unclosed code fence, a dangling **) visibly breaks the layout
-          while tokens are still arriving. whitespace-pre-wrap keeps real
-          line breaks without touching a parser. */}
-      <div
-        className={`max-w-[85%] animate-chat-message-in rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${
-          isUser
-            ? "bg-teal text-white"
-            : "border border-paper-line bg-paper text-ink"
-        }`}
-      >
-        {text}
-      </div>
+    <div className={`flex flex-col gap-2 ${isUser ? "items-end" : "items-start"}`}>
+      {text && (
+        <div
+          className={`max-w-[85%] animate-chat-message-in rounded-2xl px-4 py-2 text-sm whitespace-pre-wrap ${isUser
+              ? "bg-teal text-white"
+              : "border border-paper-line bg-paper text-ink"
+            }`}
+        >
+          {text}
+        </div>
+      )}
+      {toolParts.map((part) => (
+        <CartSummaryToolPart key={part.toolCallId} part={part} />
+      ))}
     </div>
   );
 }
@@ -273,6 +240,113 @@ function ThinkingIndicator({ exiting }) {
         <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:-0.15s]" />
         <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40" />
       </div>
+    </div>
+  );
+}
+
+function CartSummaryToolPart({ part }) {
+  switch (part.state) {
+    case "input-streaming":
+      return <ToolStateShell label="Reading the order..." />;
+
+    case "input-available":
+      return (
+        <ToolStateShell label="Calculating totals...">
+          <ul className="space-y-0.5 text-xs text-ink/50">
+            {(part.input?.items ?? []).map((item, i) => (
+              <li key={i}>
+                {item.quantity}× {item.name}
+              </li>
+            ))}
+          </ul>
+        </ToolStateShell>
+      );
+
+    case "output-available":
+      return <CartSummaryCard summary={part.output} />;
+
+    case "output-error":
+      return <CartSummaryError message={part.errorText} />;
+
+    default:
+      return null;
+  }
+}
+
+function ToolStateShell({ label, children }) {
+  return (
+    <div
+      key={label}
+      className="w-full max-w-[85%] animate-tool-fade-in rounded-2xl border border-paper-line bg-paper px-4 py-3"
+    >
+      <div className="flex items-center gap-2 text-xs font-medium text-ink/60">
+        <span className="h-1.5 w-1.5 animate-tool-pulse-soft rounded-full bg-teal" />
+        {label}
+      </div>
+      {children && <div className="mt-2">{children}</div>}
+    </div>
+  );
+}
+
+function CartSummaryCard({ summary }) {
+  if (!summary) return null;
+  const { items, subtotal, tax, shipping, total, currency } = summary;
+  const format = (n) =>
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency || "USD",
+    }).format(n);
+
+  return (
+    <div
+      key="output-available"
+      className="w-full max-w-[85%] animate-tool-fade-in overflow-hidden rounded-2xl border border-paper-line bg-white"
+    >
+      <div className="border-b border-paper-line bg-paper px-4 py-2 text-xs font-medium tracking-wide text-ink/60 uppercase">
+        Order summary
+      </div>
+      <ul className="divide-y divide-paper-line px-4">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-center justify-between gap-3 py-2 text-sm">
+            <span className="text-ink/80">
+              {item.quantity} × {item.name}
+            </span>
+            <span className="font-medium text-ink">{format(item.lineTotal)}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="space-y-1 border-t border-paper-line px-4 py-3 text-sm">
+        <div className="flex justify-between text-ink/60">
+          <span>Subtotal</span>
+          <span>{format(subtotal)}</span>
+        </div>
+        <div className="flex justify-between text-ink/60">
+          <span>Tax</span>
+          <span>{format(tax)}</span>
+        </div>
+        <div className="flex justify-between text-ink/60">
+          <span>Shipping</span>
+          <span>{shipping === 0 ? "Free" : format(shipping)}</span>
+        </div>
+        <div className="flex justify-between border-t border-paper-line pt-1.5 text-base font-semibold text-teal-dark">
+          <span>Total</span>
+          <span>{format(total)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CartSummaryError({ message }) {
+  return (
+    <div
+      key="output-error"
+      className="w-full max-w-[85%] animate-tool-fade-in rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+    >
+      <p className="font-medium">Couldn&apos;t calculate the total</p>
+      <p className="mt-0.5 text-red-600/90">
+        {message || "Something went wrong reading the order."}
+      </p>
     </div>
   );
 }

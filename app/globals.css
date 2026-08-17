@@ -11,6 +11,9 @@
   --font-display: var(--font-fraunces);
   --font-body: var(--font-inter);
   --font-mono: var(--font-plex-mono);
+
+  --animate-tool-fade-in: tool-fade-in 0.2s ease-out;
+  --animate-tool-pulse-soft: tool-pulse-soft 1.4s ease-in-out infinite;
 }
 
 body {
@@ -24,4 +27,20 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+@keyframes tool-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tool-pulse-soft {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }

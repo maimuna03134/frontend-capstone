@@ -12,8 +12,11 @@
   --font-body: var(--font-inter);
   --font-mono: var(--font-plex-mono);
 
-  --animate-tool-fade-in: tool-fade-in 0.2s ease-out;
+    --animate-tool-fade-in: tool-fade-in 0.2s ease-out;
   --animate-tool-pulse-soft: tool-pulse-soft 1.4s ease-in-out infinite;
+  --animate-chat-message-in: chat-message-in 0.25s ease-out;
+  --animate-chat-label-in: chat-label-in 0.15s ease-out;
+  --animate-chat-indicator-out: chat-indicator-out 0.15s ease-in forwards;
 }
 
 body {
@@ -43,4 +46,26 @@ body {
 @keyframes tool-pulse-soft {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
+}
+
+
+@keyframes chat-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chat-label-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes chat-indicator-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

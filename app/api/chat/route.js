@@ -4,6 +4,21 @@ import { calculateCartSummary } from "@/lib/tools";
 
 export const maxDuration = 30;
 
+// Maps whatever the model provider throws into one of a few safe tokens the
+// client can key off of — never the raw error, which could leak internals.
+function categorizeError(error) {
+  const message = error instanceof Error ? error.message : String(error ?? "");
+  const lower = message.toLowerCase();
+
+  if (lower.includes("429") || lower.includes("rate limit") || lower.includes("quota")) {
+    return "rate-limit";
+  }
+  if (lower.includes("fetch failed") || lower.includes("network") || lower.includes("econnrefused")) {
+    return "network";
+  }
+  return "server";
+}
+
 export async function POST(req) {
   const { messages } = await req.json();
 
@@ -14,5 +29,5 @@ export async function POST(req) {
     tools: { calculateCartSummary },
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({ onError: categorizeError });
 }

@@ -33,6 +33,31 @@ stock") — renders as a designed error card, not a crash.
 | `output-available` | `CartSummaryCard` — itemized summary card |
 | `output-error` | `CartSummaryError` — red error card |
 
+
+## Error, empty, and edge-case handling
+
+Primary flow: the AI Shopping Assistant (`/assistant`) — the only fully
+wired flow in the app so far. Inventory of failure/edge cases and how each
+is handled:
+
+| Case | Handled by | How |
+|---|---|---|
+| Network failure before send | `getErrorCopy()` in `Chat.js` | Detects offline/fetch errors client-side, shows "check your connection" copy |
+| API error mid-stream | `route.js` `categorizeError()` + `useChat`'s `error` | Server maps the raw error to a safe token (`rate-limit` / `network` / `server`); client shows matching copy, never the raw message |
+| Rate limit (429) | Same as above | `rate-limit` token → "getting a lot of requests, wait a few seconds" |
+| Malformed/failed tool execution | `calculateCartSummary`'s thrown error → `output-error` tool part | `CartSummaryError` component |
+| Empty input | `handleSubmit` guard + disabled Send button | Can't submit whitespace-only input |
+| First-run empty state | Suggested-prompt chips in `Chat.js` | Three click-to-send examples, one of which demos the cart tool |
+| Slow response | `ThinkingIndicator` | Skeleton-shaped shell sized like a short reply, not a spinner, to minimize layout shift |
+| Route render failure | `app/error.js`, `app/assistant/error.js` | Designed fallback with Try again / Homepage |
+| Double-clicking retry | `isRetrying` guard in `Chat.js` | Second click while a retry is in flight is ignored |
+
+**Mobile Safari fixes:** `dvh` instead of `vh` (avoids address-bar resize
+jump), 16px textarea on small screens (iOS auto-zooms inputs under 16px),
+`overscroll-contain` on the scroll container so rubber-band scroll doesn't
+fight the pinned auto-scroll.
+
+
 ## Stack
 
 - Next.js 16 (App Router, JavaScript — no TypeScript)

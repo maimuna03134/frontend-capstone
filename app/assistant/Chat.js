@@ -11,6 +11,30 @@ function getMessageText(message) {
     .join("");
 }
 
+function getErrorCopy(error) {
+  const message = error?.message ?? "";
+
+  if (message === "rate-limit") {
+    return "The assistant is getting a lot of requests right now. Wait a few seconds and try again.";
+  }
+  if (message === "network") {
+    return "Couldn't reach the assistant. Check your connection and try again.";
+  }
+  if (
+    (typeof navigator !== "undefined" && !navigator.onLine) ||
+    /fetch|network/i.test(message)
+  ) {
+    return "You appear to be offline. Check your connection and try again.";
+  }
+  return "Something went wrong on our end. Try again in a moment.";
+}
+
+const SUGGESTED_PROMPTS = [
+  "I need something warm for winter under $50",
+  "What's the difference between your jewelry and electronics categories?",
+  "2 t-shirts at $15 each and a jacket for $60 — what's my total?",
+];
+
 const reducedMotionQuery =
   typeof window !== "undefined"
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
@@ -53,6 +77,10 @@ export default function Chat() {
   });
   const [input, setInput] = useState("");
 
+  const [input, setInput] = useState("");
+  const [isRetrying, setIsRetrying] = useState(false);
+  const [prevStatus, setPrevStatus] = useState(status);
+
   const scrollRef = useRef(null);
   const bottomRef = useRef(null);
   const isPinnedRef = useRef(true);
@@ -94,6 +122,17 @@ export default function Chat() {
     bottomRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
   }
 
+  if (status !== prevStatus) {
+    setPrevStatus(status);
+    if (status !== "error") setIsRetrying(false);
+  }
+
+  function handleRetry() {
+    if (isRetrying) return; // ignore a second click while the first is in flight
+    setIsRetrying(true);
+    regenerate();
+  }
+
   function handleSubmit(event) {
     event.preventDefault();
     const text = input.trim();
@@ -104,17 +143,34 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-[70vh] flex-col overflow-hidden rounded-xl border border-paper-line bg-white">
+    <div className="flex h-[70dvh] flex-col overflow-hidden rounded-xl border border-paper-line bg-white">
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 space-y-4 overflow-y-auto px-4 py-6"
+        className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-6"
       >
         {messages.length === 0 && (
-          <p className="text-sm text-ink/50">
-            Ask about sizing, materials, or which category to look in — e.g.
-            &ldquo;I need something warm for winter under $50.&rdquo;
-          </p>
+          <div className="space-y-3">
+            <p className="text-sm text-ink/50">
+              Ask about sizing, materials, or which category to look in — or
+              try one of these:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {SUGGESTED_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => {
+                    isPinnedRef.current = true;
+                    sendMessage({ text: prompt });
+                  }}
+                  className="rounded-full border border-paper-line bg-white px-3 py-1.5 text-left text-xs text-ink/70 transition-colors duration-150 hover:border-teal hover:text-teal"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {messages.map((message) => (
@@ -172,7 +228,7 @@ export default function Chat() {
             }
           }}
           placeholder="Ask the assistant..."
-          className="min-h-11 flex-1 resize-none rounded-lg border border-paper-line px-3 py-2.5 text-sm outline-none focus-visible:border-teal"
+          className="min-h-11 flex-1 resize-none rounded-lg border border-paper-line px-3 py-2.5 text-base outline-none focus-visible:border-teal md:text-sm"
         />
         {isBusy ? (
           <button
@@ -232,13 +288,11 @@ function ThinkingIndicator({ exiting }) {
   return (
     <div className="flex justify-start">
       <div
-        className={`flex items-center gap-1 rounded-2xl border border-paper-line bg-paper px-4 py-3 ${
-          exiting ? "animate-chat-indicator-out" : "animate-chat-message-in"
-        }`}
+        className={`max-w-[85%] space-y-2 rounded-2xl border border-paper-line bg-paper px-4 py-3 ${exiting ? "animate-chat-indicator-out" : "animate-chat-message-in"
+          }`}
       >
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:-0.3s]" />
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40 [animation-delay:-0.15s]" />
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink/40" />
+        <div className="h-3 w-40 animate-tool-pulse-soft rounded bg-ink/10" />
+        <div className="h-3 w-24 animate-tool-pulse-soft rounded bg-ink/10" />
       </div>
     </div>
   );

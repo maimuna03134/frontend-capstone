@@ -17,6 +17,7 @@
   --animate-chat-message-in: chat-message-in 0.25s ease-out;
   --animate-chat-label-in: chat-label-in 0.15s ease-out;
   --animate-chat-indicator-out: chat-indicator-out 0.15s ease-in forwards;
+  --animate-btn-shake: btn-shake 0.4s ease-in-out;
 }
 
 body {
@@ -68,4 +69,11 @@ body {
 @keyframes chat-indicator-out {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+
+@keyframes btn-shake {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
 }

@@ -91,6 +91,30 @@ npm run dev
 
 Open http://localhost:3000.
 
+## Testing
+
+\`\`\`bash
+npm run test        # Vitest + React Testing Library (component tests)
+npm run test:watch  # same, watch mode
+npm run test:e2e    # Playwright end-to-end (installs browsers once: npx playwright install --with-deps)
+\`\`\`
+
+Component tests never call the real AI route — `@ai-sdk/react`'s `useChat`
+is mocked in `Chat.test.js`, and the Playwright E2E test mocks
+`/api/chat` with a hand-built (protocol-accurate) response instead of
+hitting a real model.
+
+| Test file | Covers |
+|---|---|
+| `app/assistant/Chat.test.js` | Chat message renderer — empty state, text messages, pending/streaming status, categorized error + retry, and all four tool-call states |
+| `app/assistant/CartSummaryCard.test.js` | The tool-result component in isolation (line items, totals, free vs. paid shipping) |
+| `app/login/LoginForm.test.js` | The validated login form — labels, empty-submit errors, invalid-email error, valid submit |
+| `e2e/assistant-primary-flow.spec.js` | Primary flow end-to-end: ask the assistant a question, see it answered |
+
+CI (`.github/workflows/ci.yml`) runs lint + both test suites on every push
+and pull request to `main`.
+
+
 ## Project docs
 
 - [`CLAUDE.md`](./CLAUDE.md) — stack, conventions, and rules for AI-assisted

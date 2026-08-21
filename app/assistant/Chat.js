@@ -284,6 +284,8 @@ function ThinkingIndicator({ exiting }) {
   return (
     <div className="flex justify-start">
       <div
+        role="status"
+        aria-label="Assistant is responding"
         className={`max-w-[85%] space-y-2 rounded-2xl border border-paper-line bg-paper px-4 py-3 ${exiting ? "animate-chat-indicator-out" : "animate-chat-message-in"
           }`}
       >
@@ -338,7 +340,7 @@ function ToolStateShell({ label, children }) {
   );
 }
 
-function CartSummaryCard({ summary }) {
+export function CartSummaryCard({ summary }) {
   if (!summary) return null;
   const { items, subtotal, tax, shipping, total, currency } = summary;
   const format = (n) =>

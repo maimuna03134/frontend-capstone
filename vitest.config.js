@@ -25,5 +25,6 @@ export default defineConfig({
         environment: "jsdom",
         setupFiles: ["./vitest.setup.js"],
         exclude: ["node_modules", "e2e", ".next"],
+        pool: "threads",
     },
 });

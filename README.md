@@ -58,6 +58,31 @@ jump), 16px textarea on small screens (iOS auto-zooms inputs under 16px),
 fight the pinned auto-scroll.
 
 
+## 3D product preview
+
+`/3d-preview` — an interactive product configurator built with React Three
+Fiber: drag to orbit, pinch/scroll to zoom, and swap the color or finish
+(matte/satin/glossy) on a procedurally-built mug (cylinder + torus, no
+external model file).
+
+**Perf note:** no `.glb`/model asset at all — the geometry is built from
+primitives, so there's zero model download weight. The `three` +
+`@react-three/fiber` + `@react-three/drei` bundle (~150KB+ gzipped) is
+kept off the initial page load via `next/dynamic(..., { ssr: false })`,
+loaded only once `/3d-preview` mounts. Pixel ratio is capped at 2
+(`dpr={[1, 2]}`) so high-DPI phones don't render more pixels than needed,
+`powerPreference: "low-power"` hints the GPU to favor battery, and shadows
+use a single cheap `<ContactShadows>` blob instead of a full shadow map.
+No HDRI environment map — lit with three plain lights instead, to skip an
+extra texture download. Falls back to a static (non-WebGL) panel when
+`prefers-reduced-motion` is set or WebGL isn't available, with an
+explicit "show anyway" opt-in rather than silently forcing motion.
+
+**With more time:** swap the procedural mug for a real (Draco-compressed)
+`.glb` product model with drag-and-drop loading, and wire this into an
+actual product detail page once the catalog is real (FE-04+).
+
+
 ## Stack
 
 - Next.js 16 (App Router, JavaScript — no TypeScript)

@@ -110,7 +110,7 @@ function DemoRow({ title, description, buttonRef, children }) {
     return (
         <div className="rounded-xl border border-paper-line bg-white p-6">
             <h2 className="font-display text-lg text-ink">{title}</h2>
-            <p className="mt-1 max-w-prose text-sm text-ink/60">{description}</p>
+            <p className="mt-1 max-w-prose text-sm text-ink/70">{description}</p>
 
             <div className="mt-5 flex flex-wrap items-center gap-3">
                 {children}

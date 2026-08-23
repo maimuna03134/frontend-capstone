@@ -91,7 +91,7 @@ function StaticFallback({ reason, onEnable }) {
                 aria-hidden="true"
                 className="h-20 w-20 rounded-full bg-gradient-to-br from-teal to-teal-dark"
             />
-            <p className="max-w-xs text-sm text-ink/60">
+            <p className="max-w-xs text-sm text-ink/70">
                 {reason === "webgl"
                     ? "3D isn't supported in this browser — here's a static preview instead."
                     : "The 3D view is paused for your reduced-motion preference."}
@@ -120,7 +120,7 @@ function Configurator({
     return (
         <div className="flex flex-wrap items-center gap-6 rounded-xl border border-paper-line bg-white p-4">
             <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
+                <p className="text-xs font-medium uppercase tracking-wide text-ink/70">
                     Color
                 </p>
                 <div className="mt-2 flex gap-2">
@@ -142,7 +142,7 @@ function Configurator({
             </div>
 
             <div>
-                <p className="text-xs font-medium uppercase tracking-wide text-ink/50">
+                <p className="text-xs font-medium uppercase tracking-wide text-ink/70">
                     Finish
                 </p>
                 <div className="mt-2 flex gap-1.5">
@@ -163,7 +163,7 @@ function Configurator({
                 </div>
             </div>
 
-            <label className="ml-auto flex items-center gap-2 text-xs text-ink/60">
+            <label className="ml-auto flex items-center gap-2 text-xs text-ink/70">
                 <input
                     type="checkbox"
                     checked={autoRotate}

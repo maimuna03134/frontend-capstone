@@ -184,4 +184,32 @@ describe("Chat", () => {
             ),
         ).toBeInTheDocument();
     });
+
+    it("has an accessible label for the message input", () => {
+        mockUseChat({ messages: [] });
+        render(<Chat />);
+
+        expect(screen.getByLabelText("Message")).toBeInTheDocument();
+    });
+
+    it("politely announces the assistant's reply once it finishes", () => {
+        mockUseChat({
+            messages: [textMessage("1", "user", "Hi")],
+            status: "streaming",
+        });
+        const { rerender } = render(<Chat />);
+
+        mockUseChat({
+            messages: [
+                textMessage("1", "user", "Hi"),
+                textMessage("2", "assistant", "Try our winter sale."),
+            ],
+            status: "ready",
+        });
+        rerender(<Chat />);
+
+        expect(screen.getByRole("status", { hidden: true })).toHaveTextContent(
+            "Assistant replied: Try our winter sale.",
+        );
+    });
 });

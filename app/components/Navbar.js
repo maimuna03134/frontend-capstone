@@ -11,7 +11,6 @@ const links = [
   { href: "/account", label: "Account" },
   { href: "/login", label: "Log in" },
   { href: "/assistant", label: "Assistant" },
-  
 ];
 
 export default function Navbar() {
@@ -36,16 +35,16 @@ export default function Navbar() {
           Menu
         </button>
 
-        <nav className="hidden items-center gap-1 sm:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-1 sm:flex">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                pathname === link.href
+              aria-current={pathname === link.href ? "page" : undefined}
+              className={`rounded-md px-3 py-1.5 text-sm transition-colors ${pathname === link.href
                   ? "bg-teal text-white"
                   : "text-ink/70 hover:text-teal"
-              }`}
+                }`}
             >
               {link.label}
             </Link>
@@ -56,6 +55,7 @@ export default function Navbar() {
       {open && (
         <nav
           id="mobile-nav"
+          aria-label="Mobile"
           className="flex flex-col gap-1 border-t border-paper-line px-4 py-3 sm:hidden"
         >
           {links.map((link) => (
@@ -63,11 +63,11 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className={`rounded-md px-3 py-2 text-sm ${
-                pathname === link.href
+              aria-current={pathname === link.href ? "page" : undefined}
+              className={`rounded-md px-3 py-2 text-sm ${pathname === link.href
                   ? "bg-teal text-white"
                   : "text-ink/70"
-              }`}
+                }`}
             >
               {link.label}
             </Link>

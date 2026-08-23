@@ -9,14 +9,14 @@ export default function AssistantError({ error, reset }) {
     }, [error]);
 
     return (
-        <main className="mx-auto max-w-3xl px-4 py-16 text-center">
+        <div className="mx-auto max-w-3xl px-4 py-16 text-center">
             <p className="font-mono text-xs uppercase tracking-wide text-red-600">
                 Assistant unavailable
             </p>
             <h1 className="mt-2 font-display text-2xl text-ink">
                 The assistant hit a snag
             </h1>
-            <p className="mt-2 text-sm text-ink/60">
+            <p className="mt-2 text-sm text-ink/70">
                 Something broke loading this page. Try again, or head back to the
                 catalog while we sort it out.
             </p>
@@ -35,6 +35,6 @@ export default function AssistantError({ error, reset }) {
                     Back to catalog
                 </Link>
             </div>
-        </main>
+        </div>
     );
 }

@@ -42,12 +42,12 @@ const StatefulButton = forwardRef(function StatefulButton(
     const isSuccess = state === "success";
 
     const toneClasses = isError
-        ? "bg-red-600 hover:bg-red-700 focus-visible:ring-red-600"
+        ? "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600"
         : isSuccess
-            ? "bg-teal-dark"
+            ? "bg-teal-dark text-white"
             : tone === "mustard"
-                ? "bg-mustard hover:bg-mustard/90 focus-visible:ring-mustard active:scale-[0.97]"
-                : "bg-teal hover:bg-teal-dark focus-visible:ring-teal active:scale-[0.97]";
+                ? "bg-mustard text-ink hover:bg-mustard/90 focus-visible:ring-mustard active:scale-[0.97]"
+                : "bg-teal text-white hover:bg-teal-dark focus-visible:ring-teal active:scale-[0.97]";
 
     return (
         <button
@@ -56,7 +56,7 @@ const StatefulButton = forwardRef(function StatefulButton(
             disabled={isLoading}
             aria-busy={isLoading}
             aria-live="polite"
-            className={`relative grid h-11 w-48 shrink-0 place-items-center rounded-lg text-sm font-medium text-white transition-[background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${toneClasses} ${isError ? "animate-btn-shake" : ""
+            className={`relative grid h-11 w-48 shrink-0 place-items-center rounded-lg text-sm font-medium  transition-[background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${toneClasses} ${isError ? "animate-btn-shake" : ""
                 } ${className}`}
         >
             <Layer active={state === "idle"} exitDirection="up">

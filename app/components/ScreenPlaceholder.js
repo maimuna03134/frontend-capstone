@@ -7,7 +7,7 @@ export default function ScreenPlaceholder({ eyebrow = "Coming soon", title, desc
       <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">
         {title}
       </h1>
-      <p className="mt-3 max-w-xl text-ink/60">{description}</p>
+      <p className="mt-3 max-w-xl text-ink/70">{description}</p>
 
       {plannedFeatures.length > 0 && (
         <ul className="mt-8 flex flex-col gap-2 border-t border-paper-line pt-6 text-sm text-ink/70">

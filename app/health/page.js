@@ -33,7 +33,7 @@ export default async function HealthPage() {
       <h1 className="mt-2 font-display text-3xl text-ink sm:text-4xl">
         Health check
       </h1>
-      <p className="mt-3 max-w-xl text-ink/60">
+      <p className="mt-3 max-w-xl text-ink/70">
         Confirms this app can reach its data source and render live data —
         rendered entirely on the server, no client JavaScript needed.
       </p>

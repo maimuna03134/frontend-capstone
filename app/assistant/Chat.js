@@ -78,6 +78,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [isRetrying, setIsRetrying] = useState(false);
   const [prevStatus, setPrevStatus] = useState(status);
+  const [announcement, setAnnouncement] = useState("");
 
   const scrollRef = useRef(null);
   const bottomRef = useRef(null);
@@ -123,6 +124,10 @@ export default function Chat() {
   if (status !== prevStatus) {
     setPrevStatus(status);
     if (status !== "error") setIsRetrying(false);
+    if (status === "ready" && lastMessage?.role === "assistant") {
+      const text = getMessageText(lastMessage);
+      if (text) setAnnouncement(`Assistant replied: ${text}`);
+    }
   }
 
   function handleRetry() {
@@ -142,6 +147,9 @@ export default function Chat() {
 
   return (
     <div className="flex h-[70dvh] flex-col overflow-hidden rounded-xl border border-paper-line bg-white">
+      <div aria-live="polite" role="status" className="sr-only">
+        {announcement}
+      </div>
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -149,7 +157,7 @@ export default function Chat() {
       >
         {messages.length === 0 && (
           <div className="space-y-3">
-            <p className="text-sm text-ink/50">
+            <p className="text-sm text-ink/70">
               Ask about sizing, materials, or which category to look in — or
               try one of these:
             </p>
@@ -213,6 +221,9 @@ export default function Chat() {
         className="flex items-end gap-2 border-t border-paper-line p-3"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
       >
+        <label htmlFor="chat-message" className="sr-only">
+          Message
+        </label>
         <textarea
           rows={1}
           value={input}
@@ -304,7 +315,7 @@ function CartSummaryToolPart({ part }) {
     case "input-available":
       return (
         <ToolStateShell label="Calculating totals...">
-          <ul className="space-y-0.5 text-xs text-ink/50">
+          <ul className="space-y-0.5 text-xs text-ink/70">
             {(part.input?.items ?? []).map((item, i) => (
               <li key={i}>
                 {item.quantity}× {item.name}
@@ -331,7 +342,7 @@ function ToolStateShell({ label, children }) {
       key={label}
       className="w-full max-w-[85%] animate-tool-fade-in rounded-2xl border border-paper-line bg-paper px-4 py-3"
     >
-      <div className="flex items-center gap-2 text-xs font-medium text-ink/60">
+      <div className="flex items-center gap-2 text-xs font-medium text-ink/70">
         <span className="h-1.5 w-1.5 animate-tool-pulse-soft rounded-full bg-teal" />
         {label}
       </div>
@@ -354,7 +365,7 @@ export function CartSummaryCard({ summary }) {
       key="output-available"
       className="w-full max-w-[85%] animate-tool-fade-in overflow-hidden rounded-2xl border border-paper-line bg-white"
     >
-      <div className="border-b border-paper-line bg-paper px-4 py-2 text-xs font-medium tracking-wide text-ink/60 uppercase">
+      <div className="border-b border-paper-line bg-paper px-4 py-2 text-xs font-medium tracking-wide text-ink/70 uppercase">
         Order summary
       </div>
       <ul className="divide-y divide-paper-line px-4">
@@ -368,15 +379,15 @@ export function CartSummaryCard({ summary }) {
         ))}
       </ul>
       <div className="space-y-1 border-t border-paper-line px-4 py-3 text-sm">
-        <div className="flex justify-between text-ink/60">
+        <div className="flex justify-between text-ink/70">
           <span>Subtotal</span>
           <span>{format(subtotal)}</span>
         </div>
-        <div className="flex justify-between text-ink/60">
+        <div className="flex justify-between text-ink/70">
           <span>Tax</span>
           <span>{format(tax)}</span>
         </div>
-        <div className="flex justify-between text-ink/60">
+        <div className="flex justify-between text-ink/70">
           <span>Shipping</span>
           <span>{shipping === 0 ? "Free" : format(shipping)}</span>
         </div>

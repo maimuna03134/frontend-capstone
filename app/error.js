@@ -16,7 +16,7 @@ export default function GlobalError({ error, reset }) {
             <h1 className="mt-2 font-display text-2xl text-ink">
                 This page hit an error
             </h1>
-            <p className="mt-2 text-sm text-ink/60">
+            <p className="mt-2 text-sm text-ink/70">
                 Try reloading. If it keeps happening, head back to the homepage.
             </p>
             <div className="mt-6 flex justify-center gap-3">

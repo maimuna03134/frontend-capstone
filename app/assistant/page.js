@@ -8,14 +8,14 @@ export const metadata = {
 
 export default function AssistantPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
+    <div className="mx-auto max-w-3xl px-4 py-16">
       <p className="font-mono text-xs uppercase tracking-wide text-teal">
         AI Assistant
       </p>
       <h1 className="mt-2 font-display text-3xl text-ink">
         Ask the shopping assistant
       </h1>
-      <p className="mt-2 max-w-prose text-sm text-ink/60">
+      <p className="mt-2 max-w-prose text-sm text-ink/70">
         Streams a real response back token by token — try stopping it
         mid-reply, and sending a follow-up in the same conversation.
       </p>
@@ -23,6 +23,6 @@ export default function AssistantPage() {
       <div className="mt-8">
         <Chat />
       </div>
-    </main>
+    </div>
   );
 }

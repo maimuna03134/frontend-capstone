@@ -225,6 +225,7 @@ export default function Chat() {
           Message
         </label>
         <textarea
+          id="chat-message"
           rows={1}
           value={input}
           onChange={(event) => setInput(event.target.value)}

@@ -82,6 +82,23 @@ explicit "show anyway" opt-in rather than silently forcing motion.
 `.glb` product model with drag-and-drop loading, and wire this into an
 actual product detail page once the catalog is real (FE-04+).
 
+## Shader hero
+
+`/shader-hero` — a hand-written GLSL fragment shader (raw WebGL2, no
+library) rendered fullscreen behind a headline card. Three layered sine
+waves stand in for real noise to build a slowly drifting flow field,
+colored through the brand's paper → mustard → teal palette, with a soft
+vignette and a grain pass to avoid banding. Uses all three core uniforms:
+`u_time` drives the drift, `u_resolution` corrects the aspect ratio,
+`u_mouse` gently (5%) pulls the field toward the cursor. Full commented
+source: `app/shader-hero/ShaderHero.js`.
+
+**Perf/reduced-motion note:** pixel ratio capped at 2, the render loop
+pauses via the Page Visibility API when the tab is hidden, and
+`prefers-reduced-motion` skips WebGL entirely in favor of a static CSS
+gradient in the same three colors — so there's no canvas, no shader
+compile, and no animation loop at all for those users, not just a paused
+one.
 
 ## Stack
 

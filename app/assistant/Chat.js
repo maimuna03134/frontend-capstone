@@ -17,6 +17,9 @@ function getErrorCopy(error) {
   if (message === "rate-limit") {
     return "The assistant is getting a lot of requests right now. Wait a few seconds and try again.";
   }
+  if (message === "invalid-request") {
+    return "That message (or this conversation) is too long. Try starting a new chat.";
+  }
   if (message === "network") {
     return "Couldn't reach the assistant. Check your connection and try again.";
   }

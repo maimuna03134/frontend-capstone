@@ -290,6 +290,37 @@ is honored via the global CSS rule in `globals.css`.
 - Planned: Firebase (Auth + Realtime Database) once accounts/orders need
   a real backend
 
+
+## Known limitations & future improvements
+
+**Limitations, honestly:**
+- The product catalog, cart, checkout, login, and account pages are still
+  placeholders — there's no real product data, no persistent cart, and no
+  real authentication yet. The AI assistant is explicitly told it has no
+  live product/price access and says so rather than inventing answers.
+- The assistant has exactly one tool (`calculateCartSummary`) — no
+  product search or recommendation tool yet, since there's no real
+  catalog to search.
+- `LoginForm` does client-side validation only; there's no backend behind
+  it.
+- Rate limiting (`lib/rate-limit.js`) is in-memory and per-serverless-
+  instance — it stops casual single-IP abuse, not a distributed one (see
+  "Production hygiene" above for the full tradeoff).
+- The 3D configurator and shader hero are standalone demo routes, not yet
+  wired into an actual product page or marketing hero.
+
+**With more time, in priority order:**
+1. Real product catalog (FakeStoreAPI, per the original plan) with
+   search/filter/sort, so the assistant's "I don't have live product
+   data" caveat goes away and a second tool (product search) makes sense.
+2. Firebase Auth + a real cart, so `calculateCartSummary` can read an
+   actual cart instead of parsing it from chat text.
+3. Move rate limiting to Upstash/Redis for real cross-instance
+   protection.
+4. Use the shader hero as the actual homepage hero once there's real
+   content to put over it.
+
+
 ## Project docs
 
 - [`AUDIT.md`](./AUDIT.md) — accessibility/performance audit, before/after

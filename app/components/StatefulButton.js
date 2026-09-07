@@ -11,6 +11,7 @@ const StatefulButton = forwardRef(function StatefulButton(
         icon,
         action,
         tone = "teal",
+        size = "default",
         className = "",
     },
     ref,
@@ -48,6 +49,8 @@ const StatefulButton = forwardRef(function StatefulButton(
             : tone === "mustard"
                 ? "bg-mustard text-ink hover:bg-mustard/90 focus-visible:ring-mustard active:scale-[0.97]"
                 : "bg-teal text-white hover:bg-teal-dark focus-visible:ring-teal active:scale-[0.97]";
+    
+    const sizeClasses = size === "compact" ? "h-9 w-auto px-4" : "h-11 w-48";
 
     return (
         <button
@@ -56,7 +59,7 @@ const StatefulButton = forwardRef(function StatefulButton(
             disabled={isLoading}
             aria-busy={isLoading}
             aria-live="polite"
-            className={`relative grid h-11 w-48 shrink-0 place-items-center rounded-lg text-sm font-medium  transition-[background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${toneClasses} ${isError ? "animate-btn-shake" : ""
+            className={`relative grid ${sizeClasses} shrink-0 place-items-center rounded-lg text-sm font-medium  transition-[background-color,transform] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed ${toneClasses} ${isError ? "animate-btn-shake" : ""
                 } ${className}`}
         >
             <Layer active={state === "idle"} exitDirection="up">
@@ -98,8 +101,8 @@ function Layer({ active, exitDirection, children }) {
     return (
         <span
             className={`[grid-area:1/1] flex items-center gap-2 transition-all duration-200 ${easing} ${active
-                    ? "scale-100 opacity-100"
-                    : `pointer-events-none opacity-0 ${hiddenTransform}`
+                ? "scale-100 opacity-100"
+                : `pointer-events-none opacity-0 ${hiddenTransform}`
                 }`}
         >
             {children}

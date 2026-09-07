@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import StatefulButton from "./StatefulButton";
+import StatefulButton from "../components/StatefulButton";
 
 function fakeRequest(forcedOutcome) {
     return new Promise((resolve, reject) => {

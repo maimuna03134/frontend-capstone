@@ -1,4 +1,4 @@
-import LazyShaderHero from "./LazyShaderHero";
+import LazyShaderHero from "../components/LazyShaderHero";
 
 export const metadata = {
     title: "Shader Hero — ShopFront",

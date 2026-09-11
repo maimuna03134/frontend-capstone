@@ -3,6 +3,7 @@ import { getCategoriesFrom, getProducts } from "@/lib/products";
 import CatalogGrid from "./components/CatalogGrid";
 import LazyShaderHero from "./components/LazyShaderHero";
 
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "ShopFront",
   description:
@@ -10,7 +11,13 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const products = await getProducts();
+  let products = [];
+  let loadError = null;
+  try {
+    products = await getProducts();
+  } catch (error) {
+    loadError = error;
+  }
   const categories = getCategoriesFrom(products);
 
   return (
@@ -36,9 +43,24 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <CatalogGrid products={products} categories={categories} />
-      </div>
+      {loadError ? (
+        <div className="mx-auto max-w-2xl px-4 py-16 text-center">
+          <p className="text-sm text-ink/70">
+            We couldn&apos;t load the catalog right now. Please refresh the
+            page in a moment.
+          </p>
+        </div>
+      ) : (
+        <>
+          <CategoryShortcuts categories={categories} />
+
+          <div id="catalog" className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+            <Suspense fallback={<p className="text-sm text-ink/70">Loading products…</p>}>
+              <CatalogGrid products={products} categories={categories} />
+            </Suspense>
+          </div>
+        </>
+      )}
     </div>
   );
 }
